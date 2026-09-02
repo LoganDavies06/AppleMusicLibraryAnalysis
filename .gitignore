@@ -3,3 +3,4 @@ music.db
 ERD.drawio
 __pycache__/
 .vscode/
+.DS_Store
