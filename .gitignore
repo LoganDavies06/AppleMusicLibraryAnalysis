@@ -1,2 +1,5 @@
 entries.csv
 music.db
+ERD.drawio
+__pycache__/
+.vscode/
