@@ -4,8 +4,8 @@ from pathlib import Path
 import re
 import sqlite3
 
-from play_count_helper import *
-from SQL_methods import *
+from python_files.play_count_helper import *
+from python_files.SQL_methods import *
 
 def normalize_title(title):
     # Remove track/disc number
