@@ -5,7 +5,7 @@
 #include <string>
 #include "Texture.hpp"
 
-namespace MusicLibAnal::cpp::graphics {
+namespace MusicLibAnal::graphics {
 
     //child class of 'Texture'
     class Image: public Texture {

@@ -1,6 +1,6 @@
 #include "Image.hpp"
 
-namespace MusicLibAnal::cpp::graphics {
+namespace MusicLibAnal::graphics {
     bool Image::loadImage( std::string path, SDL_Renderer* rn) {
         destroy();
 

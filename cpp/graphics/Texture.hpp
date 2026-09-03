@@ -3,7 +3,7 @@
 #include <SDL3/SDL.h>
 
 //Parent class for everything that can be displayed on screen
-namespace MusicLibAnal::cpp::graphics{
+namespace MusicLibAnal::graphics{
     /*
     TL --- T --- TR
     |     |     |

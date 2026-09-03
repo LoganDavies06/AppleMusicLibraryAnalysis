@@ -1,6 +1,6 @@
 #include "Texture.hpp"
 
-namespace MusicLibAnal::cpp::graphics {
+namespace MusicLibAnal::graphics {
     Texture::Texture(): 
         texture{ nullptr },
         w{0},

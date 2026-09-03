@@ -3,7 +3,7 @@
 #include <SDL3/SDL.h>
 #include "Texture.hpp"
 
-namespace MusicLibAnal::cpp::graphics {
+namespace MusicLibAnal::graphics {
         //child class of 'Texture'
     class Rectangle: public Texture {
         public:

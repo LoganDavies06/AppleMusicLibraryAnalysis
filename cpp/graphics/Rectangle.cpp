@@ -1,7 +1,7 @@
 #include "Rectangle.hpp"
 #include <vector>
 
-namespace MusicLibAnal::cpp::graphics {
+namespace MusicLibAnal::graphics {
     Rectangle::Rectangle()
         : Texture(),
         rect{},
