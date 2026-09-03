@@ -12,5 +12,7 @@ namespace MusicLibAnal::cpp::graphics {
         public:
             //loads an image to the texture from the given file path
             bool loadImage( std::string path, SDL_Renderer* rn);
+
+            void resetSize();
     };
 }

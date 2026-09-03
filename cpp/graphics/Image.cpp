@@ -27,4 +27,9 @@ namespace MusicLibAnal::cpp::graphics {
 
         return texture != nullptr;
     }
+
+    void Image::resetSize() {
+        w = texture->w;
+        h = texture->h;
+    }
 }

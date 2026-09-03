@@ -1,21 +1,29 @@
 #include "Rectangle.hpp"
+#include <vector>
+
 namespace MusicLibAnal::cpp::graphics {
     Rectangle::Rectangle()
         : Texture(),
-        rect{}
+        rect{},
+        filled {true},
+        thickness {1}
     {}
 
     Rectangle::Rectangle(float pX, float pY)
         : Texture(pX, pY),
-        rect {}
+        rect {},
+        filled {true},
+        thickness {1}
     {
         rect.x = pX;
         rect.y = pY;
     }
 
-    Rectangle::Rectangle(float pX, float pY, int pW, int pH)
+    Rectangle::Rectangle(float pX, float pY, float pW, float pH)
         : Texture(pX, pY),
-        rect {}
+        rect {},
+        filled {true},
+        thickness {1}
     {
         w = pW;
         h = pH;
@@ -28,7 +36,9 @@ namespace MusicLibAnal::cpp::graphics {
 
     Rectangle::Rectangle(SDL_FRect& pRect)
         : Texture(pRect.x, pRect.y),
-        rect {}
+        rect {},
+        filled {true},
+        thickness {1}
     {
         w = pRect.w;
         h = pRect.h;
@@ -39,38 +49,6 @@ namespace MusicLibAnal::cpp::graphics {
         rect.h = pRect.h;
     }
 
-    void Rectangle::setWidth(int pW) {
-        w = pW;
-        updateRect();
-    }
-
-    void Rectangle::setHeight(int pH) {
-        h = pH;
-        updateRect();
-    }
-
-    void Rectangle::setSize(int pW, int pH) {
-        w = pW;
-        h = pH;
-        updateRect();
-    }
-
-    void Rectangle::setRect(const SDL_FRect& pRect) {
-        x = pRect.x;
-        y = pRect.y;
-        w = pRect.w;
-        h = pRect.h;
-        updateRect();
-    }
-
-    void Rectangle::setRect(float pX, float pY, int pW, int pH) {
-        x = pX;
-        y = pY;
-        w = pW;
-        h = pH;
-        updateRect();
-    }
-
     void Rectangle::updateRect() {
         rect.x = x;
         rect.y = y;
@@ -78,33 +56,47 @@ namespace MusicLibAnal::cpp::graphics {
         rect.h = h;
     }
 
-    void Rectangle::setPosition(float pX, float pY, TexturePoint point) {
-        Texture::setPosition(pX, pY, point);
-        updateRect();
-    }
-
-    void Rectangle::setX(float pX) {
-        Texture::setX(pX);
-        updateRect();
-    }
-
-    void Rectangle::setY(float pY) {
-        Texture::setY(pY);
-        updateRect();
-    }
-
     void Rectangle::render(SDL_Renderer* rn, SDL_FRect* clip) {
         //sets the colour of the rectangle
         SDL_SetRenderDrawColor(rn, fill.r, fill.g, fill.b, fill.a);
         updateRect();
-        
-        if (clip != nullptr)
-        {
-            SDL_RenderFillRect(rn, clip);
+        std::vector<SDL_FRect> rects;
+
+        //filled rectangle
+        if (filled) {
+            if (clip != nullptr) {
+                rects = {*clip};
+            }
+            else {
+                rects = {rect};
+            }
         }
-        else
+        //rectangle not filled: draw 4 rectangles for border
+        else {
+            if (clip != nullptr) {
+                //left, top, right, bottom
+                rects = {
+                    SDL_FRect {clip->x, clip->y, thickness, clip->h},
+                    SDL_FRect {clip->x, clip->y, clip->w, thickness},
+                    SDL_FRect {clip->x + clip->w - thickness, clip->y, thickness, clip->h},
+                    SDL_FRect {clip->x, clip->y + clip->h - thickness, clip->w, thickness}
+                };
+            }
+            else {
+                //left, top, right, bottom
+                rects = {
+                    SDL_FRect {x, y, thickness, h},
+                    SDL_FRect {x, y, w, thickness},
+                    SDL_FRect {x + w - thickness, y, thickness, h},
+                    SDL_FRect {x, y + h - thickness, w, thickness}
+                };
+            }
+        }
+        
+        //render rectangle
+        for (const auto& i: rects)
         {
-            SDL_RenderFillRect(rn, &rect);
+            SDL_RenderFillRect(rn, &i);
         }
     }
 
@@ -121,4 +113,10 @@ namespace MusicLibAnal::cpp::graphics {
     SDL_Color Rectangle::getColour() {
         return fill;
     }
+
+    void Rectangle::setFilled(bool pFilled) { filled = pFilled; }
+    bool Rectangle::getFilled() { return filled; }
+
+    void Rectangle::setThickness(float pThickness) { thickness = pThickness; }
+    float Rectangle::getThickness() { return thickness; }
 }

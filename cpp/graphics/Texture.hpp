@@ -42,6 +42,13 @@ namespace MusicLibAnal::cpp::graphics{
             virtual void setX(float pX);
             virtual void setY(float pY);
 
+            //change the size of the texture
+            void setWidth(float pW);
+            void setHeight(float pH);
+            void setSize(float pW, float pH);
+            void setRect(const SDL_FRect& pRect);
+            void setRect(float pX, float pY, float pW, float pH);
+
             //change alpha
             void setAlpha(Uint8 a);
 
@@ -50,7 +57,8 @@ namespace MusicLibAnal::cpp::graphics{
 
             //accessory
             float* getPosition();
-            int* getSize();
+            float* getSize();
+            SDL_FRect getRect();
             SDL_Texture* getTexture();
 
         protected:
@@ -58,9 +66,9 @@ namespace MusicLibAnal::cpp::graphics{
             SDL_Texture* texture;
 
             //x and y of the top left corner
-            float x, y;
+            float x, y, w, h;
 
             //width and height of the texture, along with alpha
-            int w, h, a;
+            int a;
     };
 }

@@ -10,20 +10,8 @@ namespace MusicLibAnal::cpp::graphics {
             //constructors
             Rectangle();
             Rectangle(float pX, float pY);
-            Rectangle(float pX, float pY, int pW, int pH);
+            Rectangle(float pX, float pY, float pW, float pH);
             Rectangle(SDL_FRect& pRect);
-
-            //change the shape of the rectangle
-            void setWidth(int pW);
-            void setHeight(int pH);
-            void setSize(int pW, int pH);
-            void setRect(const SDL_FRect& pRect);
-            void setRect(float pX, float pY, int pW, int pH);
-
-            //change the position of the rectangle
-            void setPosition(float pX, float pY, TexturePoint point = TOPLEFT) override;
-            void setX(float pX) override;
-            void setY(float pY) override;
 
             //change the rectangle colour
             void setColour(int r, int g, int b);
@@ -31,11 +19,20 @@ namespace MusicLibAnal::cpp::graphics {
 
             SDL_Color getColour();
 
+            void setFilled(bool pFilled);
+            bool getFilled();
+
+            void setThickness(float pThickness);
+            float getThickness();
+
             void render(SDL_Renderer* gRenderer, SDL_FRect* clip = nullptr) override;
 
         private:
             SDL_FRect rect;
             SDL_Color fill;
+            bool filled;
+            //thickness of border when not filled
+            float thickness;
 
             //updates the rect variable with the given dimensions
             void updateRect();

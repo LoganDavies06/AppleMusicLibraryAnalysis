@@ -97,8 +97,8 @@ namespace MusicLibAnal::cpp::graphics {
         return pos;
     }
 
-    int* Texture::getSize() {
-        int size[] = {w, h};
+    float* Texture::getSize() {
+        float size[] = {w, h};
         return size;
     }
 
@@ -113,7 +113,7 @@ namespace MusicLibAnal::cpp::graphics {
     void Texture::render(SDL_Renderer* gRenderer, SDL_FRect* clip)
     {
         //Set texture position
-        SDL_FRect dstRect{ x, y, static_cast<float>( w ), static_cast<float>( h ) };
+        SDL_FRect dstRect{ x, y, w, h };
 
         if (clip != nullptr){
             dstRect.w = clip->w;
@@ -122,5 +122,36 @@ namespace MusicLibAnal::cpp::graphics {
 
         //Render texture
         SDL_RenderTexture( gRenderer, texture, clip, &dstRect );
+    }
+
+    void Texture::setWidth(float pW) {
+        w = pW;
+    }
+
+    void Texture::setHeight(float pH) {
+        h = pH;
+    }
+
+    void Texture::setSize(float pW, float pH) {
+        w = pW;
+        h = pH;
+    }
+
+    void Texture::setRect(const SDL_FRect& pRect) {
+        x = pRect.x;
+        y = pRect.y;
+        w = pRect.w;
+        h = pRect.h;
+    }
+
+    void Texture::setRect(float pX, float pY, float pW, float pH) {
+        x = pX;
+        y = pY;
+        w = pW;
+        h = pH;
+    }
+
+    SDL_FRect Texture::getRect() {
+        return SDL_FRect {x, y, w, h};
     }
 }
