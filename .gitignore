@@ -4,3 +4,4 @@ ERD.drawio
 __pycache__/
 .vscode/
 .DS_Store
+build/
