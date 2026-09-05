@@ -6,7 +6,7 @@ from datetime import date
 def create_database():
     database = sqlite3.connect("music.db")
 
-    with open("create_tables.sql", "r") as file:
+    with open(Path(__file__).parent / "create_tables.sql", "r") as file:
         database.executescript(file.read())
 
     database.commit()
@@ -57,6 +57,10 @@ def get_release(db: sqlite3.Connection, file: File, artist_ids: list[int], title
     compilation = file.tags.get("cpil", [False])
     year =  file.tags.get("\xa9day")[0]
 
+    #somtimes compilation will be an array, this solves that.
+    if not isinstance(compilation, bool):
+        compilation = compilation[0]
+
     if compilation:
         artist_ids = db.execute("SELECT id FROM Artist WHERE name = 'Various Artists'").fetchone()
 
@@ -84,10 +88,12 @@ def get_release(db: sqlite3.Connection, file: File, artist_ids: list[int], title
 
     return release_id
 
-def get_version(db: sqlite3.Connection, file: File, path: Path, song_id: int, release_id: int, subtitle: str, musicID: str):
+def get_version(db: sqlite3.Connection, file: File, path: Path, song_id: int, release_id: int, subtitle: str, musicID: str, favourited: bool):
     track = file.tags.get("trkn")
     disk = file.tags.get("disk")
     duration = round(file.info.length)
+
+    fav = 1 if favourited else 0
 
     track_no = track[0][0] if track else None
     disk_no = disk[0][0] if disk else None
@@ -95,10 +101,14 @@ def get_version(db: sqlite3.Connection, file: File, path: Path, song_id: int, re
     row = db.execute("SELECT id FROM SongVersion WHERE music_id = ?", (musicID,)).fetchone()
 
     if row: 
-        db.execute("UPDATE SongVersion SET song_id = ?, subtitle = ? WHERE id = ?", (song_id, subtitle, row[0]))
+        db.execute(
+        "UPDATE SongVersion SET song_id = ?, subtitle = ?, release_id = ?, track_no = ?, disk_no = ?, file_path = ?, duration_sec = ?, favourited = ? WHERE id = ?",
+        (song_id, subtitle, release_id, track_no, disk_no, str(path), duration, fav, row[0]))
         return row[0]
 
-    cursor = db.execute("INSERT INTO SongVersion (song_id, release_id, subtitle, track_no, disk_no, file_path, duration_sec, music_id) VALUES (?,?,?,?,?,?,?,?)", (song_id, release_id, subtitle, track_no, disk_no, str(path), duration, musicID))
+    cursor = db.execute(
+    "INSERT INTO SongVersion (song_id, release_id, subtitle, track_no, disk_no, file_path, duration_sec, music_id, favourited) VALUES (?,?,?,?,?,?,?,?,?)", 
+    (song_id, release_id, subtitle, track_no, disk_no, str(path), duration, musicID, fav))
 
     return cursor.lastrowid
 

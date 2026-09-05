@@ -12,13 +12,14 @@ tell application "Music"
     repeat with t in every file track of library playlist 1
         set trackName to name of t
         set trackArtist to artist of t
+        set albumArtist to album artist of t
         set trackAlbum to album of t
         set trackPlays to played count of t
         set musicID to persistent ID of t
         set trackNo to track number of t
         set diskNo to disc number of t
+        set trackFavourited to favorited of t
 
-        set albumArtist to album artist of t
         if albumArtist is missing value or albumArtist is "" then
             set albumArtist to trackArtist
         end if
@@ -28,7 +29,7 @@ tell application "Music"
             display notification "Processed " & i & " out of " & totalTracks & " tracks" with title "Apple Music Query"
         end if
 
-        set output to output & trackName & tab & trackArtist & tab & albumArtist & tab & trackAlbum & tab & trackPlays & tab & musicID & tab & trackNo & tab & diskNo & return
+        set output to output & trackName & tab & trackArtist & tab & albumArtist & tab & trackAlbum & tab & trackPlays & tab & musicID & tab & trackNo & tab & diskNo & tab & trackFavourited & return
     end repeat
 
     return output
@@ -49,9 +50,9 @@ def query_play_count():
         print(result.stderr)
     else:
         for line in result.stdout.splitlines():
-            title, artist, album_artist, album, plays, musicID, trackNo, diskNo = line.split("\t")
+            title, artist, album_artist, album, plays, musicID, trackNo, diskNo, fav = line.split("\t")
 
-            entries.append(SongData(title, artist, album_artist, album, plays, musicID, trackNo, diskNo))
+            entries.append(SongData(title, artist, album_artist, album, plays, musicID, trackNo, diskNo, fav))
 
     with open("entries.csv", "w", newline="") as entriesFile:
         writer = csv.writer(entriesFile)
@@ -64,10 +65,11 @@ def query_play_count():
         "plays",
         "musicID",
         "trackNo",
-        "diskNo"])
+        "diskNo",
+        "favourited"])
 
         for i in entries:
-            writer.writerow([i.title, i.artist, i.album_artist, i.album, i.plays, i.musicID, i.trackNo, i.diskNo])
+            writer.writerow([i.title, i.artist, i.album_artist, i.album, i.plays, i.musicID, i.trackNo, i.diskNo, i.fav])
 
     return entries
 
@@ -78,7 +80,7 @@ def query_play_count_csv():
         reader = csv.reader(entries_file)
         header = next(reader)
         for row in reader:
-            entries.append(SongData(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7]))
+            entries.append(SongData(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7], row[8]))
 
     return entries
 
@@ -92,8 +94,9 @@ class SongData:
     musicID: str
     trackNo: int
     diskNo: int
+    fav: int
 
-    def __init__(self,title, artist, album_artist, album, plays, musicID, trackNo, diskNo):
+    def __init__(self,title, artist, album_artist, album, plays, musicID, trackNo, diskNo, fav: str):
         self.title = title
         self.artist = artist
         self.album_artist = album_artist
@@ -102,6 +105,10 @@ class SongData:
         self.musicID = musicID
         self.trackNo = int(trackNo)
         self.diskNo = int(diskNo)
+        if fav.lower() == "true":
+            self.fav = True
+        else:
+            self.fav = False
 
         if not album_artist:
             self.album_artist = artist

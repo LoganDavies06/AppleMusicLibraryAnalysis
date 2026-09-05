@@ -4,8 +4,8 @@ from pathlib import Path
 import re
 import sqlite3
 
-from python_files.play_count_helper import *
-from python_files.SQL_methods import *
+from play_count_helper import *
+from SQL_methods import *
 
 def normalize_title(title):
     # Remove track/disc number
@@ -14,10 +14,7 @@ def normalize_title(title):
     subtitles = []
 
     while True:
-        match = re.match(
-            r"^(.+?)\s*([\(\[][^)\]]*[\)\]])$",
-            title
-        )
+        match = re.match(r"^(.+?)\s*([\(\[][^)\]]*[\)\]])$", title)
 
         if not match:
             break
@@ -42,7 +39,7 @@ def song_into_database(database: sqlite3.Connection, full_artist: str, full_titl
     album_artist_ids = get_artists(database, album_artists)
     song_id = get_song(database, artist_ids, title)
     release_id = get_release(database, file, album_artist_ids, play_count.album, path)
-    version_id = get_version(database, file, path, song_id, release_id, subtitle, play_count.musicID)
+    version_id = get_version(database, file, path, song_id, release_id, subtitle, play_count.musicID, play_count.fav)
     add_play_count(database, version_id, play_count.plays)
 
 def process_song(path: Path, play_counts_map: dict[tuple[str, str, str, int, int], SongData], database: sqlite3.Connection):
@@ -75,7 +72,7 @@ def process_song(path: Path, play_counts_map: dict[tuple[str, str, str, int, int
 
 def update_database():
     print("Retrieving play counts from Apple Music", flush=True)
-    play_counts = query_play_count()
+    play_counts = query_play_count_csv()
     play_counts_map = {
     (song.title, song.artist, song.album, song.trackNo, song.diskNo): song
     for song in play_counts }
