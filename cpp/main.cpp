@@ -5,6 +5,7 @@
 
 #include"graphics/structs.hpp"
 #include"graphics/Colours.hpp"
+#include"view/TestDisplay.hpp"
 
 namespace graphics = MusicLibAnal::graphics;
 
@@ -13,6 +14,7 @@ struct Window {
     SDL_Renderer* renderer{ nullptr };
 };
 
+//set up the SDL Window along with all of the SDL modules
 bool init(struct graphics::Dimensions dim, struct Window* wn) {
     bool success{ true };
 
@@ -46,6 +48,17 @@ bool init(struct graphics::Dimensions dim, struct Window* wn) {
     }
 
     return success;
+}
+
+//cleans up resources after app ends
+void cleanUp(Window* wn) {
+    //cleans up window and renderer
+    SDL_DestroyRenderer(wn->renderer);
+    SDL_DestroyWindow(wn->wn);
+    wn->renderer = nullptr;
+    wn->wn = nullptr;
+
+    SDL_Quit();
 }
 
 int main() {
@@ -83,10 +96,14 @@ int main() {
             SDL_SetRenderDrawColor(window.renderer, bgCol.r, bgCol.g, bgCol.b, bgCol.a);
             SDL_RenderClear(window.renderer);
 
+            //all rendering here
+            MusicLibAnal::view::testDisplay(window.renderer);
+
             //refresh screen
             SDL_RenderPresent(window.renderer);
         }
     }
 
+    cleanUp(&window);
     return exitCode;
 }
